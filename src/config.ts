@@ -1,6 +1,11 @@
 import "dotenv/config";
 import { Redis } from "ioredis";
 import { script } from "./scripts/load-script.js";
+import type { Request } from "express";
+
+/**
+ * Redis setup
+ */
 
 const HOST = process.env.REDIS_HOST;
 const PORT = Number(process.env.REDIS_PORT);
@@ -18,5 +23,17 @@ redis.on("error", (err) => {
   console.log(`An error occured: ${err.message}`);
 });
 
-const result = await redis.eval(script, 1, "my:key", 60);
-console.log(result);
+/**
+ * Base types
+ */
+export type RateLimiterConfig = {
+  redis: Redis;
+  windowMs: number;
+  max: number;
+  keyPrefix?: string;
+  message?: string;
+  skipFailedRequests?: boolean;
+  skip?: (req: Request) => boolean;
+};
+
+console.log(redis instanceof Redis);
